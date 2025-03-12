@@ -4,14 +4,12 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import dynamic from 'next/dynamic';
 import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
-
-const { Document, Page, Text, View, StyleSheet, Font, pdf } = require('@react-pdf/renderer');
+import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
 
 const PDFDownloadLink = dynamic(
   () => import('@react-pdf/renderer').then(mod => mod.PDFDownloadLink),
   { ssr: false }
 );
-
 
 Font.register({
   family: 'Roboto',
