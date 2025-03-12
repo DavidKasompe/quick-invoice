@@ -4,17 +4,22 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import dynamic from 'next/dynamic';
 import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
-import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
+import { StyleSheet } from '@react-pdf/renderer';
 
-const PDFDownloadLink = dynamic(
-  () => import('@react-pdf/renderer').then(mod => mod.PDFDownloadLink),
-  { ssr: false }
-);
+const Document = dynamic(() => import('@react-pdf/renderer').then(mod => mod.Document), { ssr: false });
+const Page = dynamic(() => import('@react-pdf/renderer').then(mod => mod.Page), { ssr: false });
+const Text = dynamic(() => import('@react-pdf/renderer').then(mod => mod.Text), { ssr: false });
+const View = dynamic(() => import('@react-pdf/renderer').then(mod => mod.View), { ssr: false });
+const PDFDownloadLink = dynamic(() => import('@react-pdf/renderer').then(mod => mod.PDFDownloadLink), { ssr: false });
 
-Font.register({
-  family: 'Roboto',
-  src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf'
-});
+if (typeof window !== 'undefined') {
+  import('@react-pdf/renderer').then(({ Font }) => {
+    Font.register({
+      family: 'Roboto',
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf'
+    });
+  });
+}
 
 interface InvoiceItem {
   description: string;
