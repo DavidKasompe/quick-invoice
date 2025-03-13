@@ -4,15 +4,14 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import dynamic from "next/dynamic";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
-
-const {
+import {
   Document,
   Page,
   Text,
   View,
   StyleSheet,
   pdf,
-} = require("@react-pdf/renderer");
+} from "@react-pdf/renderer";
 
 const PDFDownloadLink = dynamic(
   () => import("@react-pdf/renderer").then((mod) => mod.PDFDownloadLink),
