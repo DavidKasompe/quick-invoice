@@ -5,19 +5,37 @@ import { useForm } from "react-hook-form";
 import dynamic from "next/dynamic";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 
-const {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  pdf,
-} = require("@react-pdf/renderer");
 
+const Document = dynamic(
+  () => import("@react-pdf/renderer").then((mod) => mod.Document),
+  { ssr: false }
+);
+const Page = dynamic(
+  () => import("@react-pdf/renderer").then((mod) => mod.Page),
+  { ssr: false }
+);
+const Text = dynamic(
+  () => import("@react-pdf/renderer").then((mod) => mod.Text),
+  { ssr: false }
+);
+const View = dynamic(
+  () => import("@react-pdf/renderer").then((mod) => mod.View),
+  { ssr: false }
+);
 const PDFDownloadLink = dynamic(
   () => import("@react-pdf/renderer").then((mod) => mod.PDFDownloadLink),
   { ssr: false }
 );
+
+
+if (typeof window !== "undefined") {
+  import("@react-pdf/renderer").then(({ Font }) => {
+    Font.register({
+      family: "Roboto",
+      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf",
+    });
+  });
+}
 
 interface InvoiceItem {
   description: string;
@@ -36,173 +54,6 @@ interface InvoiceData {
   notes: string;
 }
 
-const styles = StyleSheet.create({
-  page: {
-    padding: 40,
-    fontFamily: "Helvetica",
-    backgroundColor: "#ffffff",
-  },
-  header: {
-    fontSize: 32,
-    marginBottom: 20,
-    color: "#1a1a1a",
-    textTransform: "uppercase",
-    fontWeight: "bold",
-    textAlign: "center",
-    fontFamily: "Helvetica-Bold",
-  },
-  invoiceNumber: {
-    fontSize: 14,
-    color: "#6B7280",
-    textAlign: "center",
-    marginBottom: 40,
-    fontFamily: "Helvetica",
-  },
-  section: {
-    marginBottom: 30,
-  },
-  grid: {
-    flexDirection: "row",
-    gap: 40,
-  },
-  col: {
-    flex: 1,
-  },
-  label: {
-    fontSize: 12,
-    color: "#6B7280",
-    marginBottom: 4,
-    fontFamily: "Helvetica-Bold",
-  },
-  value: {
-    fontSize: 14,
-    color: "#111827",
-    fontFamily: "Helvetica",
-  },
-  billTo: {
-    marginTop: 30,
-    marginBottom: 30,
-  },
-  billToLabel: {
-    fontSize: 12,
-    color: "#6B7280",
-    marginBottom: 4,
-    fontFamily: "Helvetica-Bold",
-  },
-  billToValue: {
-    fontSize: 14,
-    color: "#111827",
-    lineHeight: 1.5,
-    fontFamily: "Helvetica",
-  },
-  table: {
-    marginTop: 30,
-    marginBottom: 30,
-  },
-  tableHeader: {
-    flexDirection: "row",
-    borderBottomColor: "#E5E7EB",
-    borderBottomWidth: 1,
-    paddingBottom: 8,
-    marginBottom: 8,
-  },
-  tableRow: {
-    flexDirection: "row",
-    borderBottomColor: "#F3F4F6",
-    borderBottomWidth: 1,
-    paddingVertical: 8,
-  },
-  description: {
-    flex: 4,
-    fontSize: 14,
-    color: "#111827",
-    paddingRight: 8,
-    fontFamily: "Helvetica",
-  },
-  quantity: {
-    flex: 1,
-    fontSize: 14,
-    color: "#111827",
-    textAlign: "right",
-    fontFamily: "Helvetica",
-  },
-  rate: {
-    flex: 2,
-    fontSize: 14,
-    color: "#111827",
-    textAlign: "right",
-    paddingRight: 8,
-    fontFamily: "Helvetica",
-  },
-  amount: {
-    flex: 2,
-    fontSize: 14,
-    color: "#111827",
-    textAlign: "right",
-    fontFamily: "Helvetica",
-  },
-  tableHeaderText: {
-    fontSize: 12,
-    color: "#6B7280",
-    fontFamily: "Helvetica-Bold",
-  },
-  totalsSection: {
-    marginTop: 20,
-    borderTopColor: "#E5E7EB",
-    borderTopWidth: 1,
-    paddingTop: 20,
-  },
-  totalRow: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginTop: 8,
-  },
-  totalLabel: {
-    fontSize: 14,
-    fontFamily: "Helvetica-Bold",
-    color: "#111827",
-    marginRight: 40,
-  },
-  totalAmount: {
-    fontSize: 14,
-    fontFamily: "Helvetica-Bold",
-    color: "#111827",
-    width: 100,
-    textAlign: "right",
-  },
-  notes: {
-    marginTop: 40,
-    paddingTop: 20,
-    borderTopColor: "#E5E7EB",
-    borderTopWidth: 1,
-  },
-  notesLabel: {
-    fontSize: 12,
-    color: "#6B7280",
-    marginBottom: 4,
-    fontFamily: "Helvetica-Bold",
-  },
-  notesValue: {
-    fontSize: 14,
-    color: "#111827",
-    lineHeight: 1.5,
-    fontFamily: "Helvetica",
-  },
-  footer: {
-    position: "absolute",
-    bottom: 30,
-    left: 40,
-    right: 40,
-    textAlign: "center",
-    color: "#9CA3AF",
-    fontSize: 10,
-    paddingTop: 10,
-    borderTopColor: "#F3F4F6",
-    borderTopWidth: 1,
-    fontFamily: "Helvetica",
-  },
-});
-
 const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -211,6 +62,172 @@ const formatCurrency = (value: number): string => {
 };
 
 const InvoicePDF = ({ data }: { data: InvoiceData }) => {
+  const { StyleSheet } = require("@react-pdf/renderer");
+
+  const formatCurrency = (value: number): string => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(value);
+  };
+
+  const styles = StyleSheet.create({
+    page: {
+      padding: 40,
+      fontFamily: "Roboto",
+      backgroundColor: "#ffffff",
+    },
+    header: {
+      fontSize: 32,
+      marginBottom: 20,
+      color: "#1a1a1a",
+      textTransform: "uppercase",
+      fontWeight: "bold",
+      textAlign: "center",
+    },
+    invoiceNumber: {
+      fontSize: 14,
+      color: "#6B7280",
+      textAlign: "center",
+      marginBottom: 40,
+    },
+    section: {
+      marginBottom: 30,
+    },
+    grid: {
+      flexDirection: "row",
+      gap: 40,
+    },
+    col: {
+      flex: 1,
+    },
+    label: {
+      fontSize: 12,
+      color: "#6B7280",
+      marginBottom: 4,
+      fontWeight: "medium",
+    },
+    value: {
+      fontSize: 14,
+      color: "#111827",
+    },
+    billTo: {
+      marginTop: 30,
+      marginBottom: 30,
+    },
+    billToLabel: {
+      fontSize: 12,
+      color: "#6B7280",
+      marginBottom: 4,
+      fontWeight: "medium",
+    },
+    billToValue: {
+      fontSize: 14,
+      color: "#111827",
+      lineHeight: 1.5,
+    },
+    table: {
+      marginTop: 30,
+      marginBottom: 30,
+    },
+    tableHeader: {
+      flexDirection: "row",
+      borderBottomColor: "#E5E7EB",
+      borderBottomWidth: 1,
+      paddingBottom: 8,
+      marginBottom: 8,
+    },
+    tableRow: {
+      flexDirection: "row",
+      borderBottomColor: "#F3F4F6",
+      borderBottomWidth: 1,
+      paddingVertical: 8,
+    },
+    description: {
+      flex: 4,
+      fontSize: 14,
+      color: "#111827",
+      paddingRight: 8,
+    },
+    quantity: {
+      flex: 1,
+      fontSize: 14,
+      color: "#111827",
+      textAlign: "right",
+    },
+    rate: {
+      flex: 2,
+      fontSize: 14,
+      color: "#111827",
+      textAlign: "right",
+      paddingRight: 8,
+    },
+    amount: {
+      flex: 2,
+      fontSize: 14,
+      color: "#111827",
+      textAlign: "right",
+    },
+    tableHeaderText: {
+      fontSize: 12,
+      color: "#6B7280",
+      fontWeight: "medium",
+    },
+    totalsSection: {
+      marginTop: 20,
+      borderTopColor: "#E5E7EB",
+      borderTopWidth: 1,
+      paddingTop: 20,
+    },
+    totalRow: {
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      marginTop: 8,
+    },
+    totalLabel: {
+      fontSize: 14,
+      fontWeight: "bold",
+      color: "#111827",
+      marginRight: 40,
+    },
+    totalAmount: {
+      fontSize: 14,
+      fontWeight: "bold",
+      color: "#111827",
+      width: 100,
+      textAlign: "right",
+    },
+    notes: {
+      marginTop: 40,
+      paddingTop: 20,
+      borderTopColor: "#E5E7EB",
+      borderTopWidth: 1,
+    },
+    notesLabel: {
+      fontSize: 12,
+      color: "#6B7280",
+      marginBottom: 4,
+      fontWeight: "medium",
+    },
+    notesValue: {
+      fontSize: 14,
+      color: "#111827",
+      lineHeight: 1.5,
+    },
+    footer: {
+      position: "absolute",
+      bottom: 30,
+      left: 40,
+      right: 40,
+      textAlign: "center",
+      color: "#9CA3AF",
+      fontSize: 10,
+      paddingTop: 10,
+      borderTopColor: "#F3F4F6",
+      borderTopWidth: 1,
+    },
+  });
+
   const items = data.items.map((item) => ({
     ...item,
     quantity: Number(item.quantity) || 0,
@@ -222,11 +239,9 @@ const InvoicePDF = ({ data }: { data: InvoiceData }) => {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header */}
         <Text style={styles.header}>INVOICE</Text>
         <Text style={styles.invoiceNumber}>#{data.invoiceNumber}</Text>
 
-        {/* Company and Invoice Info Grid */}
         <View style={styles.grid}>
           <View style={styles.col}>
             <Text style={styles.label}>From</Text>
@@ -245,7 +260,6 @@ const InvoicePDF = ({ data }: { data: InvoiceData }) => {
           </View>
         </View>
 
-        {/* Bill To Section */}
         <View style={styles.billTo}>
           <Text style={styles.billToLabel}>Bill To</Text>
           <Text style={styles.billToValue}>
@@ -253,7 +267,6 @@ const InvoicePDF = ({ data }: { data: InvoiceData }) => {
           </Text>
         </View>
 
-        {/* Items Table */}
         <View style={styles.table}>
           <View style={styles.tableHeader}>
             <Text style={[styles.description, styles.tableHeaderText]}>
@@ -276,7 +289,6 @@ const InvoicePDF = ({ data }: { data: InvoiceData }) => {
           ))}
         </View>
 
-        {/* Totals Section */}
         <View style={styles.totalsSection}>
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Total</Text>
@@ -284,7 +296,6 @@ const InvoicePDF = ({ data }: { data: InvoiceData }) => {
           </View>
         </View>
 
-        {/* Notes Section */}
         {data.notes && (
           <View style={styles.notes}>
             <Text style={styles.notesLabel}>Notes</Text>
@@ -292,14 +303,12 @@ const InvoicePDF = ({ data }: { data: InvoiceData }) => {
           </View>
         )}
 
-        {/* Footer */}
         <Text style={styles.footer}>Thank you for your business!</Text>
       </Page>
     </Document>
   );
 };
 
-// Updated background style with a more subtle and professional gradient
 const pageBackground = {
   background: "linear-gradient(135deg, #f6f8fd 0%, #f0f3fa 100%)",
   backgroundImage: `
@@ -366,7 +375,6 @@ export default function InvoiceForm() {
   return (
     <div className="h-screen bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
       <div className="h-full max-w-[1400px] mx-auto flex flex-col p-4">
-        {/* Compact Header Section */}
         <div className="text-center py-2">
           <h1 className="text-2xl font-bold text-gray-900">Quick Invoice</h1>
           <p className="text-sm text-gray-600">
@@ -375,7 +383,6 @@ export default function InvoiceForm() {
         </div>
 
         <div className="flex flex-row gap-4 h-[calc(100vh-6rem)] overflow-hidden">
-          {/* Form Section */}
           <div className="w-1/2 overflow-auto rounded-2xl bg-white shadow-lg">
             <div className="sticky top-0 z-10 bg-gradient-to-r from-gray-50 to-white px-4 py-2 border-b border-gray-100">
               <h2 className="text-lg font-semibold text-gray-800">
@@ -384,7 +391,6 @@ export default function InvoiceForm() {
             </div>
 
             <form className="p-4 space-y-4">
-              {/* Company Information */}
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-gray-700">
                   Your Company
@@ -415,7 +421,6 @@ export default function InvoiceForm() {
                 </div>
               </div>
 
-              {/* Invoice Information */}
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-gray-700">
                   Invoice Info
@@ -455,7 +460,6 @@ export default function InvoiceForm() {
                 </div>
               </div>
 
-              {/* Client Information */}
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-gray-700">
                   Client Details
@@ -473,7 +477,6 @@ export default function InvoiceForm() {
                 </div>
               </div>
 
-              {/* Items Section */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <h3 className="text-sm font-medium text-gray-700">Items</h3>
@@ -558,7 +561,6 @@ export default function InvoiceForm() {
                 </div>
               </div>
 
-              {/* Notes Section */}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
                   Notes
@@ -573,7 +575,6 @@ export default function InvoiceForm() {
             </form>
           </div>
 
-          {/* Preview Section */}
           <div className="w-1/2 flex flex-col rounded-2xl bg-white shadow-lg overflow-hidden">
             <div className="bg-gradient-to-r from-gray-50 to-white px-4 py-2 border-b border-gray-100">
               <h2 className="text-lg font-semibold text-gray-800">Preview</h2>
@@ -677,7 +678,6 @@ export default function InvoiceForm() {
               </div>
             </div>
 
-            {/* Download Button */}
             <div className="p-4 bg-gray-50 border-t border-gray-100">
               {typeof window !== "undefined" && (
                 <PDFDownloadLink
