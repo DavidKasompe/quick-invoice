@@ -221,11 +221,11 @@ const InvoicePDF = ({ data }: { data: InvoiceData }) => {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header */}
+        {}
         <Text style={styles.header}>INVOICE</Text>
         <Text style={styles.invoiceNumber}>#{data.invoiceNumber}</Text>
 
-        {/* Company and Invoice Info Grid */}
+        {}
         <View style={styles.grid}>
           <View style={styles.col}>
             <Text style={styles.label}>From</Text>
@@ -244,7 +244,7 @@ const InvoicePDF = ({ data }: { data: InvoiceData }) => {
           </View>
         </View>
 
-        {/* Bill To Section */}
+        {}
         <View style={styles.billTo}>
           <Text style={styles.billToLabel}>Bill To</Text>
           <Text style={styles.billToValue}>
@@ -252,7 +252,7 @@ const InvoicePDF = ({ data }: { data: InvoiceData }) => {
           </Text>
         </View>
 
-        {/* Items Table */}
+        {}
         <View style={styles.table}>
           <View style={styles.tableHeader}>
             <Text style={[styles.description, styles.tableHeaderText]}>
@@ -275,7 +275,7 @@ const InvoicePDF = ({ data }: { data: InvoiceData }) => {
           ))}
         </View>
 
-        {/* Totals Section */}
+        {}
         <View style={styles.totalsSection}>
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Total</Text>
@@ -283,7 +283,7 @@ const InvoicePDF = ({ data }: { data: InvoiceData }) => {
           </View>
         </View>
 
-        {/* Notes Section */}
+        {}
         {data.notes && (
           <View style={styles.notes}>
             <Text style={styles.notesLabel}>Notes</Text>
@@ -291,14 +291,14 @@ const InvoicePDF = ({ data }: { data: InvoiceData }) => {
           </View>
         )}
 
-        {/* Footer */}
+        {}
         <Text style={styles.footer}>Thank you for your business!</Text>
       </Page>
     </Document>
   );
 };
 
-// Updated background style with a more subtle and professional gradient
+
 const pageBackground = {
   background: "linear-gradient(135deg, #f6f8fd 0%, #f0f3fa 100%)",
   backgroundImage: `
@@ -365,7 +365,7 @@ export default function InvoiceForm() {
   return (
     <div className="h-screen bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
       <div className="h-full max-w-[1400px] mx-auto flex flex-col p-4">
-        {/* Compact Header Section */}
+        {}
         <div className="text-center py-2">
           <h1 className="text-2xl font-bold text-gray-900">Quick Invoice</h1>
           <p className="text-sm text-gray-600">
@@ -374,7 +374,7 @@ export default function InvoiceForm() {
         </div>
 
         <div className="flex flex-row gap-4 h-[calc(100vh-6rem)] overflow-hidden">
-          {/* Form Section */}
+          {}
           <div className="w-1/2 overflow-auto rounded-2xl bg-white shadow-lg">
             <div className="sticky top-0 z-10 bg-gradient-to-r from-gray-50 to-white px-4 py-2 border-b border-gray-100">
               <h2 className="text-lg font-semibold text-gray-800">
@@ -383,7 +383,7 @@ export default function InvoiceForm() {
             </div>
 
             <form className="p-4 space-y-4">
-              {/* Company Information */}
+              {}
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-gray-700">
                   Your Company
@@ -414,7 +414,7 @@ export default function InvoiceForm() {
                 </div>
               </div>
 
-              {/* Invoice Information */}
+              {}
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-gray-700">
                   Invoice Info
@@ -454,7 +454,7 @@ export default function InvoiceForm() {
                 </div>
               </div>
 
-              {/* Client Information */}
+              {}
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-gray-700">
                   Client Details
@@ -472,7 +472,7 @@ export default function InvoiceForm() {
                 </div>
               </div>
 
-              {/* Items Section */}
+              {}
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <h3 className="text-sm font-medium text-gray-700">Items</h3>
@@ -557,7 +557,7 @@ export default function InvoiceForm() {
                 </div>
               </div>
 
-              {/* Notes Section */}
+              {}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
                   Notes
@@ -572,7 +572,7 @@ export default function InvoiceForm() {
             </form>
           </div>
 
-          {/* Preview Section */}
+          {}
           <div className="w-1/2 flex flex-col rounded-2xl bg-white shadow-lg overflow-hidden">
             <div className="bg-gradient-to-r from-gray-50 to-white px-4 py-2 border-b border-gray-100">
               <h2 className="text-lg font-semibold text-gray-800">Preview</h2>
@@ -676,7 +676,7 @@ export default function InvoiceForm() {
               </div>
             </div>
 
-            {/* Download Button */}
+            {}
             <div className="p-4 bg-gray-50 border-t border-gray-100">
               {typeof window !== "undefined" && (
                 <PDFDownloadLink

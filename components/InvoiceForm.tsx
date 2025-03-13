@@ -4,29 +4,19 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import dynamic from "next/dynamic";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  pdf,
+} from "@react-pdf/renderer";
 
-
-const Document = dynamic(
-  () => import("@react-pdf/renderer").then((mod) => mod.Document),
-  { ssr: false }
-);
-const Page = dynamic(
-  () => import("@react-pdf/renderer").then((mod) => mod.Page),
-  { ssr: false }
-);
-const Text = dynamic(
-  () => import("@react-pdf/renderer").then((mod) => mod.Text),
-  { ssr: false }
-);
-const View = dynamic(
-  () => import("@react-pdf/renderer").then((mod) => mod.View),
-  { ssr: false }
-);
 const PDFDownloadLink = dynamic(
   () => import("@react-pdf/renderer").then((mod) => mod.PDFDownloadLink),
   { ssr: false }
 );
-
 
 if (typeof window !== "undefined") {
   import("@react-pdf/renderer").then(({ Font }) => {
@@ -61,173 +51,164 @@ const formatCurrency = (value: number): string => {
   }).format(value);
 };
 
+const styles = StyleSheet.create({
+  page: {
+    padding: 40,
+    fontFamily: "Roboto",
+    backgroundColor: "#ffffff",
+  },
+  header: {
+    fontSize: 32,
+    marginBottom: 20,
+    color: "#1a1a1a",
+    textTransform: "uppercase",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  invoiceNumber: {
+    fontSize: 14,
+    color: "#6B7280",
+    textAlign: "center",
+    marginBottom: 40,
+  },
+  section: {
+    marginBottom: 30,
+  },
+  grid: {
+    flexDirection: "row",
+    gap: 40,
+  },
+  col: {
+    flex: 1,
+  },
+  label: {
+    fontSize: 12,
+    color: "#6B7280",
+    marginBottom: 4,
+    fontWeight: "medium",
+  },
+  value: {
+    fontSize: 14,
+    color: "#111827",
+  },
+  billTo: {
+    marginTop: 30,
+    marginBottom: 30,
+  },
+  billToLabel: {
+    fontSize: 12,
+    color: "#6B7280",
+    marginBottom: 4,
+    fontWeight: "medium",
+  },
+  billToValue: {
+    fontSize: 14,
+    color: "#111827",
+    lineHeight: 1.5,
+  },
+  table: {
+    marginTop: 30,
+    marginBottom: 30,
+  },
+  tableHeader: {
+    flexDirection: "row",
+    borderBottomColor: "#E5E7EB",
+    borderBottomWidth: 1,
+    paddingBottom: 8,
+    marginBottom: 8,
+  },
+  tableRow: {
+    flexDirection: "row",
+    borderBottomColor: "#F3F4F6",
+    borderBottomWidth: 1,
+    paddingVertical: 8,
+  },
+  description: {
+    flex: 4,
+    fontSize: 14,
+    color: "#111827",
+    paddingRight: 8,
+  },
+  quantity: {
+    flex: 1,
+    fontSize: 14,
+    color: "#111827",
+    textAlign: "right",
+  },
+  rate: {
+    flex: 2,
+    fontSize: 14,
+    color: "#111827",
+    textAlign: "right",
+    paddingRight: 8,
+  },
+  amount: {
+    flex: 2,
+    fontSize: 14,
+    color: "#111827",
+    textAlign: "right",
+  },
+  tableHeaderText: {
+    fontSize: 12,
+    color: "#6B7280",
+    fontWeight: "medium",
+  },
+  totalsSection: {
+    marginTop: 20,
+    borderTopColor: "#E5E7EB",
+    borderTopWidth: 1,
+    paddingTop: 20,
+  },
+  totalRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 8,
+  },
+  totalLabel: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#111827",
+    marginRight: 40,
+  },
+  totalAmount: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#111827",
+    width: 100,
+    textAlign: "right",
+  },
+  notes: {
+    marginTop: 40,
+    paddingTop: 20,
+    borderTopColor: "#E5E7EB",
+    borderTopWidth: 1,
+  },
+  notesLabel: {
+    fontSize: 12,
+    color: "#6B7280",
+    marginBottom: 4,
+    fontWeight: "medium",
+  },
+  notesValue: {
+    fontSize: 14,
+    color: "#111827",
+    lineHeight: 1.5,
+  },
+  footer: {
+    position: "absolute",
+    bottom: 30,
+    left: 40,
+    right: 40,
+    textAlign: "center",
+    color: "#9CA3AF",
+    fontSize: 10,
+    paddingTop: 10,
+    borderTopColor: "#F3F4F6",
+    borderTopWidth: 1,
+  },
+});
+
 const InvoicePDF = ({ data }: { data: InvoiceData }) => {
-  const { StyleSheet } = require("@react-pdf/renderer");
-
-  const formatCurrency = (value: number): string => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(value);
-  };
-
-  const styles = StyleSheet.create({
-    page: {
-      padding: 40,
-      fontFamily: "Roboto",
-      backgroundColor: "#ffffff",
-    },
-    header: {
-      fontSize: 32,
-      marginBottom: 20,
-      color: "#1a1a1a",
-      textTransform: "uppercase",
-      fontWeight: "bold",
-      textAlign: "center",
-    },
-    invoiceNumber: {
-      fontSize: 14,
-      color: "#6B7280",
-      textAlign: "center",
-      marginBottom: 40,
-    },
-    section: {
-      marginBottom: 30,
-    },
-    grid: {
-      flexDirection: "row",
-      gap: 40,
-    },
-    col: {
-      flex: 1,
-    },
-    label: {
-      fontSize: 12,
-      color: "#6B7280",
-      marginBottom: 4,
-      fontWeight: "medium",
-    },
-    value: {
-      fontSize: 14,
-      color: "#111827",
-    },
-    billTo: {
-      marginTop: 30,
-      marginBottom: 30,
-    },
-    billToLabel: {
-      fontSize: 12,
-      color: "#6B7280",
-      marginBottom: 4,
-      fontWeight: "medium",
-    },
-    billToValue: {
-      fontSize: 14,
-      color: "#111827",
-      lineHeight: 1.5,
-    },
-    table: {
-      marginTop: 30,
-      marginBottom: 30,
-    },
-    tableHeader: {
-      flexDirection: "row",
-      borderBottomColor: "#E5E7EB",
-      borderBottomWidth: 1,
-      paddingBottom: 8,
-      marginBottom: 8,
-    },
-    tableRow: {
-      flexDirection: "row",
-      borderBottomColor: "#F3F4F6",
-      borderBottomWidth: 1,
-      paddingVertical: 8,
-    },
-    description: {
-      flex: 4,
-      fontSize: 14,
-      color: "#111827",
-      paddingRight: 8,
-    },
-    quantity: {
-      flex: 1,
-      fontSize: 14,
-      color: "#111827",
-      textAlign: "right",
-    },
-    rate: {
-      flex: 2,
-      fontSize: 14,
-      color: "#111827",
-      textAlign: "right",
-      paddingRight: 8,
-    },
-    amount: {
-      flex: 2,
-      fontSize: 14,
-      color: "#111827",
-      textAlign: "right",
-    },
-    tableHeaderText: {
-      fontSize: 12,
-      color: "#6B7280",
-      fontWeight: "medium",
-    },
-    totalsSection: {
-      marginTop: 20,
-      borderTopColor: "#E5E7EB",
-      borderTopWidth: 1,
-      paddingTop: 20,
-    },
-    totalRow: {
-      flexDirection: "row",
-      justifyContent: "flex-end",
-      marginTop: 8,
-    },
-    totalLabel: {
-      fontSize: 14,
-      fontWeight: "bold",
-      color: "#111827",
-      marginRight: 40,
-    },
-    totalAmount: {
-      fontSize: 14,
-      fontWeight: "bold",
-      color: "#111827",
-      width: 100,
-      textAlign: "right",
-    },
-    notes: {
-      marginTop: 40,
-      paddingTop: 20,
-      borderTopColor: "#E5E7EB",
-      borderTopWidth: 1,
-    },
-    notesLabel: {
-      fontSize: 12,
-      color: "#6B7280",
-      marginBottom: 4,
-      fontWeight: "medium",
-    },
-    notesValue: {
-      fontSize: 14,
-      color: "#111827",
-      lineHeight: 1.5,
-    },
-    footer: {
-      position: "absolute",
-      bottom: 30,
-      left: 40,
-      right: 40,
-      textAlign: "center",
-      color: "#9CA3AF",
-      fontSize: 10,
-      paddingTop: 10,
-      borderTopColor: "#F3F4F6",
-      borderTopWidth: 1,
-    },
-  });
-
   const items = data.items.map((item) => ({
     ...item,
     quantity: Number(item.quantity) || 0,
